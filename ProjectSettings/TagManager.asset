@@ -6,8 +6,8 @@ TagManager:
   tags:
   - Damager
   - Stopper
-  - Sliceable
   - Knife
+  - Sliceable
   layers:
   - Default
   - TransparentFX

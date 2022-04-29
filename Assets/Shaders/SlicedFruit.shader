@@ -3,7 +3,7 @@ Shader "Unlit/SlicedFruit"
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
-        _Edge("Edge", Range(-0.5, 0.5)) = 0.0
+        _Edge("Edge", Range(-5, 5)) = 0.0
         [Toggle] _LeftSlice("LeftSlice", Int) = 1
     }
     SubShader
