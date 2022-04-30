@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EventSystem;
+using ObjectPoolSystem;
 
 public enum SliceableModel
 {
@@ -19,6 +21,8 @@ public class Sliceable : MonoBehaviour
     SliceableModel model = SliceableModel.sphere;
     public SliceableModel _Model { get => model; }
     Renderer rend;
+    [SerializeField]
+    GameEvent objectSlicedEvent = null;
 
     private void Awake()
     {
@@ -56,7 +60,8 @@ public class Sliceable : MonoBehaviour
         {
             rb.AddForce(transform.right * 500f);
         }
-        GameManager.instance._Money += 1;
+
+        objectSlicedEvent.Invoke((uint)1);
         StartCoroutine(DeactivateCoroutine());
     }
 

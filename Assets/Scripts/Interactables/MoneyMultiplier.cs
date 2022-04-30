@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EventSystem;
 
 public class MoneyMultiplier : MonoBehaviour
 {
     [SerializeField]
-    int multiplier = 2;
+    uint multiplier = 2;
     [SerializeField]
     GameEvent gameWinEvent = null;
     [SerializeField]

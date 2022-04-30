@@ -2,13 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FollowController : MonoBehaviour
+namespace GameSystem
 {
-    [SerializeField]
-    Transform targetToFollow = null;
-
-    private void LateUpdate()
+    public class FollowController : MonoBehaviour
     {
-        transform.position = targetToFollow.position;
+        [SerializeField]
+        Transform targetToFollow = null;
+
+        private void LateUpdate()
+        {
+            transform.position = targetToFollow.position;
+        }
+
+        public void ChangeTarget(Transform target)
+        {
+            targetToFollow = target;
+        }
     }
 }

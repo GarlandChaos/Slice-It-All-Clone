@@ -2,40 +2,50 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GameEvent", menuName = "Game Events/Game Event")]
-public class GameEvent : ScriptableObject
+namespace EventSystem
 {
-    List<IGameEventListener> listeners = new List<IGameEventListener>();
-
-    public void Invoke(params object[] args)
+    [CreateAssetMenu(fileName = "GameEvent", menuName = "Game Events/Game Event")]
+    public class GameEvent : ScriptableObject
     {
-        for (int i = listeners.Count - 1; i >= 0; i--)
+        List<IGameEventListener> listeners = new List<IGameEventListener>();
+
+        public void Invoke(params object[] args)
         {
-            IGameEventListenerInt listenerInt = listeners[i] as IGameEventListenerInt;
-            if (listenerInt != null)
+            for (int i = listeners.Count - 1; i >= 0; i--)
             {
-                listenerInt.OnEventRaised((int)args[0]);
-                continue;
+                IGameEventListenerInt listenerInt = listeners[i] as IGameEventListenerInt;
+                if (listenerInt != null)
+                {
+                    listenerInt.OnEventRaised((int)args[0]);
+                    continue;
+                }
+
+                IGameEventListenerUint listenerUint = listeners[i] as IGameEventListenerUint;
+                if (listenerUint != null)
+                {
+                    listenerUint.OnEventRaised((uint)args[0]);
+                    continue;
+                }
+
+                IGameEventListenerTransform listenerTransform = listeners[i] as IGameEventListenerTransform;
+                if (listenerTransform != null)
+                {
+                    listenerTransform.OnEventRaised((Transform)args[0]);
+                    continue;
+                }
+
+                listeners[i].OnEventRaised();
             }
-
-            //IGameEventListenerFloat listenerFloat = listeners[i] as IGameEventListenerFloat;
-            //if (listenerFloat != null)
-            //{
-            //    listenerFloat.OnEventRaised((float)args[0]);
-            //    continue;
-            //}
-
-            listeners[i].OnEventRaised();
         }
-    }
 
-    public void RegisterListener(IGameEventListener listener)
-    {
-        listeners.Add(listener);
-    }
+        public void RegisterListener(IGameEventListener listener)
+        {
+            listeners.Add(listener);
+        }
 
-    public void UnregisterListener(IGameEventListener listener)
-    {
-        listeners.Remove(listener);
+        public void UnregisterListener(IGameEventListener listener)
+        {
+            listeners.Remove(listener);
+        }
     }
 }

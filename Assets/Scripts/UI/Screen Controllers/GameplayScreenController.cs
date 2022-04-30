@@ -1,21 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EventSystem;
 
-public class GameplayScreenController : MonoBehaviour
+namespace UI
 {
-    [SerializeField]
-    GameEvent touchedGameplayScreenEvent = null;
-    [SerializeField]
-    GameEvent restartLevelEvent = null;
-
-    public void OnTouchScreen()
+    public class GameplayScreenController : MonoBehaviour
     {
-        touchedGameplayScreenEvent.Invoke();
-    }
+        [SerializeField]
+        GameEvent touchedGameplayScreenEvent = null;
+        [SerializeField]
+        GameEvent restartLevelEvent = null;
 
-    public void OnRestartLevel()
-    {
-        restartLevelEvent.Invoke();
+        public void OnTouchScreen()
+        {
+            touchedGameplayScreenEvent.Invoke();
+        }
+
+        public void OnRestartLevel()
+        {
+            restartLevelEvent.Invoke();
+        }
     }
 }

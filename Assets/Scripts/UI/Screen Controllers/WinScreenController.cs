@@ -2,14 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using EventSystem;
 
-public class WinScreenController : MonoBehaviour
+namespace UI
 {
-    [SerializeField]
-    GameEvent loadNextLevelEvent = null;
-
-    public void OnNextButton()
+    public class WinScreenController : MonoBehaviour
     {
-        loadNextLevelEvent.Invoke();
+        [SerializeField]
+        GameEvent loadNextLevelEvent = null;
+
+        public void OnNextButton()
+        {
+            loadNextLevelEvent.Invoke();
+        }
     }
 }

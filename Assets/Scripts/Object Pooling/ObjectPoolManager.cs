@@ -2,51 +2,54 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPoolManager : MonoBehaviour
+namespace ObjectPoolSystem
 {
-    public static ObjectPoolManager instance = null;
-    Dictionary<SliceableModel, ObjectPool> objectPoolDictionary = new Dictionary<SliceableModel, ObjectPool>();
-
-    private void Awake()
+    public class ObjectPoolManager : MonoBehaviour
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+        public static ObjectPoolManager instance = null;
+        Dictionary<SliceableModel, ObjectPool> objectPoolDictionary = new Dictionary<SliceableModel, ObjectPool>();
 
-    public void AddObjectPool(SliceableModel objectModel, ObjectPool objectPool)
-    {
-        if (!objectPoolDictionary.ContainsKey(objectModel))
+        private void Awake()
         {
-            objectPoolDictionary.Add(objectModel, objectPool);
-        }
-        else
-        {
-            Destroy(objectPool.gameObject);
-        }
-    }
-
-    public void RemoveObjectPool(SliceableModel objectModel)
-    {
-        if (objectPoolDictionary.ContainsKey(objectModel))
-        {
-            objectPoolDictionary.Remove(objectModel);
-        }
-    }
-
-    public GameObject GetObject(SliceableModel objectModel)
-    {
-        if (objectPoolDictionary.ContainsKey(objectModel))
-        {
-            return objectPoolDictionary[objectModel].GetObjectFromPool();
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
-        return null;
+        public void AddObjectPool(SliceableModel objectModel, ObjectPool objectPool)
+        {
+            if (!objectPoolDictionary.ContainsKey(objectModel))
+            {
+                objectPoolDictionary.Add(objectModel, objectPool);
+            }
+            else
+            {
+                Destroy(objectPool.gameObject);
+            }
+        }
+
+        public void RemoveObjectPool(SliceableModel objectModel)
+        {
+            if (objectPoolDictionary.ContainsKey(objectModel))
+            {
+                objectPoolDictionary.Remove(objectModel);
+            }
+        }
+
+        public GameObject GetObject(SliceableModel objectModel)
+        {
+            if (objectPoolDictionary.ContainsKey(objectModel))
+            {
+                return objectPoolDictionary[objectModel].GetObjectFromPool();
+            }
+
+            return null;
+        }
     }
 }

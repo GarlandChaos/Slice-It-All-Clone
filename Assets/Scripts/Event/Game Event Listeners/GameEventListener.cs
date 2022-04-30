@@ -3,30 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public interface IGameEventListener
+namespace EventSystem
 {
-    void OnEventRaised();
-}
-
-public class GameEventListener : MonoBehaviour, IGameEventListener
-{
-    [SerializeField]
-    GameEvent gameEvent;
-    [SerializeField]
-    UnityEvent response;
-
-    private void OnEnable()
+    public interface IGameEventListener
     {
-        gameEvent.RegisterListener(this);
+        void OnEventRaised();
     }
 
-    private void OnDisable()
+    public class GameEventListener : MonoBehaviour, IGameEventListener
     {
-        gameEvent.UnregisterListener(this);
-    }
+        [SerializeField]
+        GameEvent gameEvent;
+        [SerializeField]
+        UnityEvent response;
 
-    public void OnEventRaised()
-    {
-        response.Invoke();
+        private void OnEnable()
+        {
+            gameEvent.RegisterListener(this);
+        }
+
+        private void OnDisable()
+        {
+            gameEvent.UnregisterListener(this);
+        }
+
+        public void OnEventRaised()
+        {
+            response.Invoke();
+        }
     }
 }

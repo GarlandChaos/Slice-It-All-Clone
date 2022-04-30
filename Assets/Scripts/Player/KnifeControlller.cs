@@ -1,136 +1,138 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EventSystem;
 
-public class KnifeControlller : MonoBehaviour
+namespace GameSystem
 {
-    [SerializeField]
-    Transform knifeTransform = null;
-    [SerializeField]
-    float moveDistance = 5f;
-    Coroutine moveCoroutine = null;
-    bool underGravity = false;
-    float gravity = 9.8f;
-    Vector3 defaultRotation = Vector3.zero;
-    [SerializeField]
-    GameEvent gameOverEvent = null;
-
-    // Update is called once per frame
-    void Update()
+    public class KnifeControlller : MonoBehaviour
     {
-        if (underGravity)
-        {
-            knifeTransform.position = new Vector3(knifeTransform.position.x, knifeTransform.position.y - gravity * Time.deltaTime, knifeTransform.position.z);
-        }
-    }
+        [SerializeField]
+        Transform knifeTransform = null;
+        [SerializeField]
+        float moveDistance = 5f;
+        [SerializeField]
+        InterpolationSettings movementSettings = null;
+        Coroutine moveCoroutine = null;
+        float firstRotationAdjustment = -250f;
+        float normalRotationAdjustment = 360f;
+        [SerializeField]
+        Transform rotationReference = null;
+        bool underGravity = false;
+        float gravity = 9.8f;
+        Vector3 defaultRotation = Vector3.zero;
+        [SerializeField]
+        GameEvent gameOverEvent = null;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Damager")
+        void Update()
         {
-            gameOverEvent.Invoke();
+            BeAffectedByGravity();
         }
-        else if (other.tag == "Stopper")
+
+        private void OnTriggerEnter(Collider other)
         {
-            underGravity = false;
-            if (moveCoroutine != null)
+            if (other.tag == "Damager")
             {
-                StopAllCoroutines();
-                moveCoroutine = null;
+                Stop();
+                gameOverEvent.Invoke();
+            }
+            else if (other.tag == "Stopper")
+            {
+                Stop();
+                if (moveCoroutine != null)
+                {
+                    StopAllCoroutines();
+                    moveCoroutine = null;
+                }
             }
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Stopper")
+        private void OnTriggerExit(Collider other)
         {
+            if (other.tag == "Stopper")
+            {
+                underGravity = true;
+            }
+        }
+
+        public void React()
+        {
+            if (moveCoroutine == null)
+            {
+                moveCoroutine = StartCoroutine(MoveCoroutine());
+            }
+        }
+
+        public void BeAffectedByGravity()
+        {
+            if (underGravity)
+            {
+                Vector3 newPos = knifeTransform.position;
+                newPos.y -= gravity * Time.deltaTime;
+                knifeTransform.position = newPos;
+            }
+        }
+
+        public void Stop()
+        {
+            underGravity = false;
+        }
+
+        public void FirstMoveAndRotation()
+        {
+            moveCoroutine = StartCoroutine(MoveCoroutine(true));
             underGravity = true;
         }
-    }
 
-    public void React()
-    {
-        if (moveCoroutine == null)
+        IEnumerator RotateCoroutine(float rotationAdjustment, bool firstMove = false)
         {
-            moveCoroutine = StartCoroutine(MoveCoroutine());
-        }
-    }
+            WaitForEndOfFrame wait = new WaitForEndOfFrame();
+            float timer = 0f;
+            Vector3 startRotation = knifeTransform.eulerAngles;
+            Vector3 endRotation = firstMove ? rotationReference.eulerAngles : defaultRotation;
+            endRotation.x += rotationAdjustment;
 
-    IEnumerator RotateCoroutine()
-    {
-        WaitForEndOfFrame wait = new WaitForEndOfFrame();
-        AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        float timer = 0f;
-        float animationTime = 1f;
-        Vector3 startRotation = knifeTransform.eulerAngles;
-        Vector3 endRotation = defaultRotation;
-        endRotation.x += 360f;
+            do
+            {
+                timer += Time.deltaTime / movementSettings.TranslationTime;
+                knifeTransform.eulerAngles = Vector3.Lerp(startRotation, endRotation, movementSettings.TranslationCurve.Evaluate(timer));
+                yield return wait;
+            }
+            while (timer < 1f);
 
-        do
-        {
-            timer += Time.deltaTime / animationTime;
-            knifeTransform.eulerAngles = Vector3.Lerp(startRotation, endRotation, curve.Evaluate(timer));
-            yield return wait;
-        }
-        while (timer < 1f);
-    }
-
-    public void FirstMoveAndRotation()
-    {
-        moveCoroutine = StartCoroutine(MoveCoroutine(true));
-        underGravity = true;
-    }
-
-    IEnumerator FirstRotateCoroutine()
-    {
-        WaitForEndOfFrame wait = new WaitForEndOfFrame();
-        AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        float timer = 0f;
-        float animationTime = 1f;
-        Vector3 startRotation = knifeTransform.eulerAngles;
-        Vector3 endRotation = startRotation;
-        endRotation.x -= 250f;
-
-        do
-        {
-            timer += Time.deltaTime / animationTime;
-            knifeTransform.eulerAngles = Vector3.Lerp(startRotation, endRotation, curve.Evaluate(timer));
-            yield return wait;
-        }
-        while (timer < 1f);
-
-        defaultRotation = knifeTransform.eulerAngles;
-    }
-
-    IEnumerator MoveCoroutine(bool firstMove = false)
-    {
-        if (!firstMove)
-        {
-            StartCoroutine(RotateCoroutine());
-        }
-        else
-        {
-            StartCoroutine(FirstRotateCoroutine());
+            if (firstMove)
+            {
+                defaultRotation = knifeTransform.eulerAngles;
+            }
         }
 
-        WaitForEndOfFrame wait = new WaitForEndOfFrame();
-        AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        float timer = 0f;
-        float animationTime = 1f;
-        Vector3 startPosition = knifeTransform.position;
-        Vector3 endPosition = startPosition;
-        endPosition.z += moveDistance;
-        endPosition.y += moveDistance;
-
-        do
+        IEnumerator MoveCoroutine(bool firstMove = false)
         {
-            timer += Time.deltaTime / animationTime;
-            knifeTransform.position = Vector3.Lerp(startPosition, endPosition, curve.Evaluate(timer));
-            yield return wait;
-        }
-        while (timer < 1f);
+            if (!firstMove)
+            {
+                StartCoroutine(RotateCoroutine(normalRotationAdjustment));
+            }
+            else
+            {
+                StartCoroutine(RotateCoroutine(firstRotationAdjustment, true));
+            }
 
-        moveCoroutine = null;
+            WaitForEndOfFrame wait = new WaitForEndOfFrame();
+            float timer = 0f;
+            Vector3 startPosition = knifeTransform.position;
+            Vector3 endPosition = startPosition;
+            endPosition.z += moveDistance;
+            endPosition.y += moveDistance;
+
+            do
+            {
+                timer += Time.deltaTime / movementSettings.TranslationTime;
+                knifeTransform.position = Vector3.Lerp(startPosition, endPosition, movementSettings.TranslationCurve.Evaluate(timer));
+                yield return wait;
+            }
+            while (timer < 1f);
+
+            moveCoroutine = null;
+        }
     }
 }

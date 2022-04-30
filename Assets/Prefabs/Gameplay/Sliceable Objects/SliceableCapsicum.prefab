@@ -113,6 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   model: 2
+  objectSlicedEvent: {fileID: 11400000, guid: babb77f04afc65949836df650214be20, type: 2}
 --- !u!65 &9080479662581706445
 BoxCollider:
   m_ObjectHideFlags: 0

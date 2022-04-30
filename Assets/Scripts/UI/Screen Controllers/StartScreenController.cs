@@ -2,21 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using EventSystem;
 
-public class StartScreenController : MonoBehaviour
+namespace UI
 {
-    [SerializeField]
-    TMP_Text levelText = null;
-    [SerializeField]
-    GameEvent firstClickEvent = null;
-
-    public void OnStartButton()
+    public class StartScreenController : MonoBehaviour
     {
-        firstClickEvent.Invoke();
-    }
+        [SerializeField]
+        TMP_Text levelText = null;
+        [SerializeField]
+        GameEvent firstClickEvent = null;
+        [SerializeField]
+        GameEvent touchedConfigurationsButtonEvent = null;
+        [SerializeField]
+        GameEvent touchedKnifeShopButtonEvent = null;
 
-    public void SetLevelText(int level)
-    {
-        levelText.text = "Nível " + level.ToString();
+        public void OnStartButton()
+        {
+            firstClickEvent.Invoke();
+        }
+
+        public void OnConfigurationsButton()
+        {
+            touchedConfigurationsButtonEvent.Invoke();
+        }
+
+        public void OnKnifeShopButton()
+        {
+            touchedKnifeShopButtonEvent.Invoke();
+        }
+
+        public void SetLevelText(int level)
+        {
+            levelText.text = "Nível " + level.ToString();
+        }
     }
 }
